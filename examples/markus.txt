@@ -1,0 +1,107 @@
+#name: MarkUS -Markup UnderScore
+
+Jürgen Mangler
+mailto: juergen.mangler@gmail.com
+
+M a r k U S
+
+Markup UnderScore
+------ -    -
+
+Templating Engine markaby style
+
+---
+Markaby was cool.
+
+01:  mab = Markaby::Builder.new {
+02:    html do
+03:      body do
+04:        h1 "Matching Mole"
+05:      end
+06:    end
+07:  }
+
+Problems:
+
+  html centric, difficult to extend with own methods,
+  scope not available.
+
+---
+Markus has the following focus:
+
+* Extend with own helper tags
+* Use without .new stuff, just natural in the code
+* collect the output indepent from code
+---
+01: require 'MarkUS_V3.0'
+02: 
+03: class Something < MarkUS
+04:   def initialize
+05:     @__markus_indent = true
+06:   end
+07:   def stuff
+08:     html_ do
+09:       body_ do
+10:         div_ "world", :class => "hello"
+11:       end
+12:     end  
+13:   end
+14: end
+---
+15:  s = Something.new
+16:  puts s.stuff
+
+Produces:
+
+01: <html>
+02:   <body>
+03:     <div class="hello">world</div>
+04:   </body>
+05: </html>
+---
+01: class Something < MarkUS
+02:   def stuff
+03:     div_ "world", :class => "hello"
+04:     js_ <<-END
+05:       var a = 12;
+06:     END
+07:   end
+08:   
+09:   def js_(content)
+10:     script_ :type => 'text/javascript' do
+11:       text_! "//<![CDATA[\n" + content + "//]]>"
+12:     end
+13:   end
+14: end
+---
+01: <div class="hello">world</div>
+02: <script type="text/javascript">
+03: //<![CDATA[
+04:   var a = 12;
+05: //]]>
+06: </script>
+---
+01: class Something < MarkUS
+02:   def stuff
+03:     div_ "world", :class => "hello"
+04:     test = helper # 17
+07:   end
+08:   
+09:   def helper
+10:     div_ "curucamp", :class => "hello"
+11:     17
+12:   end
+13: end
+---
+01: class Something < MarkUS
+02:   def stuff
+03:     div_ do
+03:       a = a__ test, :href => "%s" do
+04:         img_ :src => "bla"
+05:       end
+06:       div_ a % "http://test"
+07:     end  
+08:   end
+09: end
+---
+http://www.pri.univie.ac.at/~mangler/MarkUS_V3.0.rb

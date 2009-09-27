@@ -1,0 +1,62 @@
+#name: CHIMP - Cheap Impression Presenter
+
+Jürgen Mangler
+mailto: juergen.mangler@gmail.com
+
+C H I M P
+
+Make a cheap impression. Present via terminal.
+---
+* Bullet stuff
+* More Bullets
++++
+* Add some stuff
+* Thats about it
+---
+
+Simple syntax:
+
+  #name get about the title of presentation
+ 
+  --- splits slides
+
+  +++ slides parts to appear
+
+Example
+
+01: # My Presentation
+02:
+03: Jürgen Mangler
+04: juergen.mangler@univie.ac.at
+05:
+06: Some presentation
+07: ---
+08: * First Bullet
+09: * Second Bullet
+10: +++
+11: * Appears afterward
+12: * This one too
+
+---
+The following code drives it:
+
+00: clear_code = %x{clear}
+01: file = File::read(fname).gsub(/^#name: (.*)(\n\s*)+/,'')
+02: name = $1
+03: 
+04: print clear_code
+05: file.split(/\n---\s*\n/).each do |slide|
+06:   puts name
+07:   puts ("-"*50) + "\n\n"
+08:   slide.split(/\n\+\+\+\s*\n/).each do |part|
+09:     print part
+10:     $stdin.gets
+12:   end  
+14:   print clear_code
+15: end
+---
+Future ideas:
+
+* Combine it with erb to get inline ruby code
+* Use curses to get terminal resolution (possible differnt)
+* Integrate wiki like syntax => translate to terminal codes to support colors
