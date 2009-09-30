@@ -1,8 +1,16 @@
 #!/usr/bin/ruby 
-require 'rubygems'
-require 'optparse'
-
 #{{{
+curpath = __FILE__
+while ::File::symlink?(curpath)
+  curpath = ::File::dirname(curpath) + '/' + ::File::readlink(curpath)
+end  
+require 'optparse'
+require 'pp'
+require 'rubygems'
+require ::File::dirname(curpath) + "/lib/ChimpParser"
+require ::File::dirname(curpath) + "/lib/ChimpParser-Grammar"
+require ::File::dirname(curpath) + "/output/screen"
+
 ARGV.options { |opt|
   opt.summary_indent = ' ' * 2
   opt.banner = "Usage:\n#{opt.summary_indent}#{File.basename($0)} [options] [FILENAME]\n"
@@ -15,24 +23,9 @@ if ARGV.length == 0 || !File.exists?(ARGV[0])
   puts ARGV.options
   exit
 end
-fname = ARGV[0]
 #}}}
 
-clear_code = %x{clear}
-width, heigth = %{resize}
-file = File::read(fname).gsub(/^#name: (.*)(\n\s*)+/,'')
-name = $1
-
-print clear_code
-file.split(/\n---\s*\n/).each do |slide|
-  puts name
-  %x{resize} =~ /COLUMNS=(\d+).*LINES=(\d+)/m
-  width = $1
-  height = $2
-  puts ("-"*($1.to_i)) + "\n\n"
-  slide.split(/\n\+\+\+\s*\n/).each do |part|
-    print part
-    $stdin.gets
-  end  
-  print clear_code
-end  
+grammy = Chimp::Parser::SimpleGrammar.parse File::read(ARGV[0])
+screen = Chimp::Parser::Screen.new
+grammy.prepare(screen)
+grammy.output(screen)

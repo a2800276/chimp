@@ -1,0 +1,14 @@
+#what: CHIMP - Cheap Impression Presenter
+
+Jürgen Mangler
+mailto: juergen.mangler@gmail.com
+
+'''!!C H I M P!!'''
+
+Make a cheap impression. Present via terminal.
+---
+* Bullet stuff
+* More Bullets
++++
+* Add some stuff
+* Thats about it
