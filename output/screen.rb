@@ -54,13 +54,39 @@ module Chimp
         @win.mvaddstr(0,0,'') 
       end
 
-      def mCP_INCREMENTAL(c,i,tree,data)
-        c.userdata = 
+      def mOP_INCREMENTAL(c,i,tree,data)
+        x = []; y = []
+        @win.getyx(y,x)
+        c.userdata = { :x => x[0], :y => y[0] }
       end
       def mCP_INCREMENTAL(c,i,tree,data)
         case @win::getch
           when Ncurses::KEY_LEFT:
-            @win.mvaddstr(1,1,c) 
+            pos = c.open-1
+            tag = tree[pos]
+            if tag.type == "P_SLIDES"
+              if pos ==  0
+                raise TagMoveEvent, pos
+              else
+                raise TagMoveEvent, tree[pos-1].open
+              end
+            end
+            if tag.type == "P_INCREMENTAL"
+              pos = tag.open
+              tag = tree[pos]
+              columns = @win.getmaxx
+              #### get current position
+              x = []; y = []
+              @win.getyx(y,x)
+              x = x[0]
+              y = y[0]
+              #### how many spaces needed
+              howmuch = ((y - tag.userdata[:y] + 1) * columns) - (columns - x) - tag.userdata[:x]
+              @win.mvaddstr(tag.userdata[:x],tag.userdata[:y],' '*howmuch) 
+              @win.mvaddstr(tag.userdata[:x],tag.userdata[:y],'')
+              ####
+              raise TagMoveEvent, pos
+            end
           when Ncurses::KEY_RIGHT:
         end  
       end
@@ -83,6 +109,11 @@ module Chimp
           @win::attrset(Ncurses::COLOR_PAIR(color_pair))
         end
       end
+
+      def p(what)
+        @win.addstr what.inspect
+      end
+
       private :set_color
     end
   end

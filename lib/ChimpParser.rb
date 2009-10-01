@@ -26,7 +26,7 @@ module Chimp
       
     class TagEvent < Exception; end
     class TagSkipEvent < Exception; end
-    class TagBackEvent < Exception; end
+    class TagMoveEvent < Exception; end
     class TagContentSkipEvent < Exception; end
     
     class Output
@@ -107,8 +107,8 @@ module Chimp
             i = c.close + 1 if c.class == OpenTag
           rescue TagContentSkipEvent
             i = c.close if c.class == OpenTag
-          rescue TagBackEvent
-            i = c.open if c.class == CloseTag
+          rescue TagMoveEvent => e
+            i = e.message.to_i
           rescue => e  
             p e.message
             p "ergo"
@@ -126,7 +126,7 @@ module Chimp
           rescue NameError
           rescue TagSkipEvent
           rescue TagContentSkipEvent
-          rescue TagBackEvent
+          rescue TagMoveEvent
           end
         end 
         output.method("finish_prepare").call
