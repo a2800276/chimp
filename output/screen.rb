@@ -67,14 +67,14 @@ module Chimp
           when Ncurses::KEY_LEFT:
             pos = c.open-1
             tag = tree[pos]
-            if tag.type == "P_SLIDES"
+            if tag.ttype == "P_SLIDES"
               if pos ==  0
                 raise TagMoveEvent, pos
               else
                 raise TagMoveEvent, tree[pos-1].open
               end
             end
-            if tag.type == "P_INCREMENTAL"
+            if tag.ttype == "P_INCREMENTAL"
               pos = tag.open
               tag = tree[pos]
               columns = @win.getmaxx
@@ -90,7 +90,14 @@ module Chimp
               ####
               raise TagMoveEvent, pos
             end
+          when Ncurses::KEY_RESIZE, Ncurses::KEY_REFRESH, Ncurses::KEY_RESET, 114:
+            (c.open-1).downto(0) do |b|
+              if tree[b].class == OpenTag && tree[b].ttype == "P_SLIDES"
+                raise TagMoveEvent, b
+              end  
+            end
           when Ncurses::KEY_RIGHT:
+            # just proceed
         end  
       end
       def mOP_INCLUDE(data)

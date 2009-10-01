@@ -4,10 +4,10 @@ $KCODE='UTF8'
 module Chimp
   class Parser
     class OpenTag
-      attr_reader :type, :level
+      attr_reader :ttype, :level
       attr_accessor :data, :close, :userdata
-      def initialize(type,level)
-        @type = type
+      def initialize(ttype,level)
+        @ttype = ttype
         @data = nil
         @close = -1
         @userdata = nil
@@ -15,9 +15,9 @@ module Chimp
       end
     end  
     class CloseTag
-      attr_reader :type, :open, :position_in_markup, :level
-      def initialize(type,open,position_in_markup,level)
-        @type = type
+      attr_reader :ttype, :open, :position_in_markup, :level
+      def initialize(ttype,open,position_in_markup,level)
+        @ttype = ttype
         @open = open
         @position_in_markup = position_in_markup
         @level = level
@@ -44,9 +44,9 @@ module Chimp
       attr_reader :tree # a list which pretends to be a tree :-)
 
       class Pattern
-        attr_reader :type, :pstart, :pend, :bol
-        def initialize(type, pstart, pend, bol=false)
-          @type = type
+        attr_reader :ptype, :pstart, :pend, :bol
+        def initialize(ptype, pstart, pend, bol=false)
+          @ptype = ptype
           @pstart = pstart
           @pend = pend
           @bol = bol
@@ -87,10 +87,10 @@ module Chimp
                 output.method("string")
               when c.class == OpenTag
                 data = c.data
-                output.method("mO" + c.type)
+                output.method("mO" + c.ttype)
               when c.class == CloseTag
                 data = @tree[c.open].data
-                output.method("mC" + c.type)
+                output.method("mC" + c.ttype)
             end
             out << case met.arity
               when 1: met.call(data) 
@@ -122,7 +122,7 @@ module Chimp
         @tree.each do |c|
           begin
             if c.class == OpenTag
-              met = output.method("mP" + c.type)
+              met = output.method("mP" + c.ttype)
               case met.arity
                 when 1: met.call(c.data) 
                 when 2: met.call(c,c.data) 
@@ -160,10 +160,10 @@ module Chimp
               else
                 ti = te.sub(pat.pend,"")
                 te = te[ti.length..-1]
-                @tree << ot = OpenTag.new(pat.type,level)
+                @tree << ot = OpenTag.new(pat.ptype,level)
                 tpos = @tree.length-1
                 inner = begin
-                  self.method("m" + pat.type).call(ts,ti,te)
+                  self.method("m" + pat.ptype).call(ts,ti,te)
                 rescue NameError
                   ti
                 rescue TagEvent
@@ -175,8 +175,8 @@ module Chimp
                   success = true
                   next
                 end
-                gparse(inner,self.class::constants.include?("G" + pat.type) ? self.class::const_get("G" + pat.type) : [],position_in_markup+pos+ts.length,level+1)
-                @tree << CloseTag.new(pat.type,tpos,position_in_markup+s.pos,level)
+                gparse(inner,self.class::constants.include?("G" + pat.ptype) ? self.class::const_get("G" + pat.ptype) : [],position_in_markup+pos+ts.length,level+1)
+                @tree << CloseTag.new(pat.ptype,tpos,position_in_markup+s.pos,level)
                 ot.close = @tree.length-1
                 success = true
                 break

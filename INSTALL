@@ -1,0 +1,5 @@
+You need 'ncurses' from http://ncurses-ruby.berlios.de/
+You need 'figlet'
+
+On debian/ubuntu:
+  apt-get install figlet libncurses-ruby
