@@ -1,12 +1,12 @@
-#name: MarkUS -Markup UnderScore
+# what: MarkUS - Markup UnderScore
 
 Jürgen Mangler
 mailto: juergen.mangler@gmail.com
 
 M a r k U S
 
-Markup UnderScore
------- -    -
+  Markup UnderScore
+  ----   -    -
 
 Templating Engine markaby style
 

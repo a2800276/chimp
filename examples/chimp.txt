@@ -1,4 +1,4 @@
-#name: CHIMP - Cheap Impression Presenter
+#what: CHIMP - Cheap Impression Presenter
 
 Jürgen Mangler
 mailto: juergen.mangler@gmail.com
@@ -16,7 +16,7 @@ Make a cheap impression. Present via terminal.
 
 Simple syntax:
 
-  #name get about the title of presentation
+  #what: the title of presentation
  
   --- splits slides
 
