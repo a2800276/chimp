@@ -9,6 +9,7 @@ module Chimp
       #### mC + patternname for closing tags ####
       
       def initialize()
+        #{{{
         @scounter = @ccounter = 0
         @what = ''
         Ncurses::initscr
@@ -30,9 +31,10 @@ module Chimp
         @win = Ncurses::stdscr
         @win::intrflush(false)
         Ncurses.keypad(@win, true)
+        #}}}
       end
 
-      def finish_output
+      def finish_output(tree)
         Ncurses::curs_set(1)
         Ncurses::endwin
       end
@@ -42,11 +44,14 @@ module Chimp
       end
       
       def mPP_SLIDES(c,data)
+        #{{{
         @scounter += 1
         @ccounter += 1
         c.userdata = @ccounter
+        #}}}
       end
       def mOP_SLIDES(c,data)
+        
         @win::clear
         lines = @win.getmaxy
         columns = @win.getmaxx
@@ -65,6 +70,7 @@ module Chimp
       def mCP_INCREMENTAL(c,i,tree,data)
         case @win::getch
           when Ncurses::KEY_LEFT:
+            #{{{
             pos = c.open-1
             tag = tree[pos]
             if tag.ttype == "P_SLIDES"
@@ -90,12 +96,15 @@ module Chimp
               ####
               raise TagMoveEvent, pos
             end
+            #}}}
           when Ncurses::KEY_RESIZE, Ncurses::KEY_REFRESH, Ncurses::KEY_RESET, 114:
+            #{{{
             (c.open-1).downto(0) do |b|
               if tree[b].class == OpenTag && tree[b].ttype == "P_SLIDES"
                 raise TagMoveEvent, b
               end  
             end
+            #}}}
           when Ncurses::KEY_RIGHT:
             # just proceed
         end  
@@ -113,18 +122,24 @@ module Chimp
       def string(data); @win::addstr data; end
 
       def set_color(color_pair)
+        #{{{
         if Ncurses::respond_to?(:color_set)
           @win::color_set(color_pair, nil)
         else
           @win::attrset(Ncurses::COLOR_PAIR(color_pair))
         end
+        #}}}
       end
+      private :set_color
 
       def p(what)
-        @win.mvaddstr 10,10,what.inspect
+        #{{{
+        lines = @win.getmaxy
+        @win.mvaddstr 0,lines-1,what.inspect
+        #}}}
       end
+      private :p
 
-      private :set_color
     end
   end
 end

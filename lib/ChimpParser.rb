@@ -99,7 +99,18 @@ module Chimp
               else
                 ""
             end.to_s
+
             i += 1
+
+            unless @tree.length > i
+              met = output.method("finish_output")
+              out << case met.arity
+                when 0: met.call
+                when 1: met.call(@tree) 
+                else
+                  ""
+              end.to_s
+            end  
           rescue NameError
             i += 1
           rescue TagSkipEvent
@@ -108,15 +119,10 @@ module Chimp
             i = c.close if c.class == OpenTag
           rescue TagMoveEvent => e
             i = e.message.to_i
-          rescue => e  
-            p e.message
-            p "ergo"
-            exit
           end
         end 
-        out << output.method("finish_output").call
         out
-      end  
+      end 
       
       def prepare(output)
         @tree.each do |c|
