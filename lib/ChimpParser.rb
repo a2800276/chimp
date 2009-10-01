@@ -78,7 +78,6 @@ module Chimp
       
       def output(output)
         out = ''; i = 0
-        puts @tree.length
         while @tree.length > i
           c = @tree[i]
           begin
@@ -122,7 +121,14 @@ module Chimp
       def prepare(output)
         @tree.each do |c|
           begin
-            output.method("mP" + c.type).call(c.data) if c.class == OpenTag
+            if c.class == OpenTag
+              met = output.method("mP" + c.type)
+              case met.arity
+                when 1: met.call(c.data) 
+                when 2: met.call(c,c.data) 
+                when 4: met.call(c,i,@tree,c.data)
+              end  
+            end
           rescue NameError
           rescue TagSkipEvent
           rescue TagContentSkipEvent

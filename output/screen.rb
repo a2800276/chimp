@@ -41,20 +41,23 @@ module Chimp
         @what = data
       end
       
-      def mPP_SLIDES(data); @scounter += 1; end
-      def mOP_SLIDES(data)
+      def mPP_SLIDES(c,data)
+        @scounter += 1
         @ccounter += 1
+        c.userdata = @ccounter
+      end
+      def mOP_SLIDES(c,data)
         @win::clear
         lines = @win.getmaxy
         columns = @win.getmaxx
         @win.mvaddstr(lines-2,0, "-"*columns) 
         @win.mvaddstr(lines-1,0, @what) 
-        num = "#{@ccounter}/#{@scounter}"
+        num = "#{c.userdata}/#{@scounter}"
         @win.mvaddstr(lines-1,columns-num.length, num) 
         @win.mvaddstr(0,0,'') 
       end
 
-      def mOP_INCREMENTAL(c,i,tree,data)
+      def mOP_INCREMENTAL(c,data)
         x = []; y = []
         @win.getyx(y,x)
         c.userdata = { :x => x[0], :y => y[0] }
@@ -111,7 +114,7 @@ module Chimp
       end
 
       def p(what)
-        @win.addstr what.inspect
+        @win.mvaddstr 10,10,what.inspect
       end
 
       private :set_color
