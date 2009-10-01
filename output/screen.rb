@@ -53,6 +53,7 @@ module Chimp
         #}}}
       end
       def mOP_SLIDES(c,tree)
+        #{{{
         @win::clear
         lines = @win.getmaxy
         columns = @win.getmaxx
@@ -61,7 +62,7 @@ module Chimp
         num = "#{c.userdata}/#{@scounter}"
         @win.mvaddstr(lines-1,columns-num.length, num) 
         @win.mvaddstr(0,0,'')
-
+        #}}}
       end
 
       def mPP_INCREMENTAL(c,tree,i)
@@ -121,9 +122,6 @@ module Chimp
               end  
             end
             #}}}
-          when Ncurses::KEY_RIGHT:
-            # just proceed
-          else  
         end  
       end
       def mOP_INCLUDE(data)
@@ -153,6 +151,9 @@ module Chimp
         #{{{
         lines = @win.getmaxy
         @win.mvaddstr lines-1,0,what.inspect
+        x = []; y = []
+        @win.getyx(y,x)
+        @win.mvaddstr y,x,''
         #}}}
       end
       private :p
