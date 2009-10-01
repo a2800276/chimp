@@ -93,24 +93,16 @@ module Chimp
                 output.method("mC" + c.ttype)
             end
             out << case met.arity
+              when 0: met.call
               when 1: met.call(data) 
-              when 2: met.call(c,data) 
-              when 4: met.call(c,i,@tree,data)
+              when 2: met.call(c,@tree) 
+              when 3: met.call(c,@tree,i)
               else
                 ""
             end.to_s
 
             i += 1
 
-            unless @tree.length > i
-              met = output.method("finish_output")
-              out << case met.arity
-                when 0: met.call
-                when 1: met.call(@tree) 
-                else
-                  ""
-              end.to_s
-            end  
           rescue NameError
             i += 1
           rescue TagSkipEvent
@@ -119,20 +111,35 @@ module Chimp
             i = c.close if c.class == OpenTag
           rescue TagMoveEvent => e
             i = e.message.to_i
+          ensure  
+            begin
+              unless @tree.length > i
+                met = output.method("finish_output")
+                out << case met.arity
+                  when 0: met.call
+                  when 1: met.call(@tree) 
+                  else
+                    ""
+                end.to_s
+              end  
+            rescue TagMoveEvent => e
+              i = e.message.to_i
+            end  
           end
         end 
         out
       end 
       
       def prepare(output)
-        @tree.each do |c|
+        @tree.each_with_index do |c,i|
           begin
             if c.class == OpenTag
               met = output.method("mP" + c.ttype)
               case met.arity
+                when 0: met.call
                 when 1: met.call(c.data) 
-                when 2: met.call(c,c.data) 
-                when 4: met.call(c,i,@tree,c.data)
+                when 2: met.call(c,@tree) 
+                when 3: met.call(c,@tree,i)
               end  
             end
           rescue NameError
